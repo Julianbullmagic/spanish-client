@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spanish Vocabulary Builder</title>
+  <style>
+    :root {
+      --primary: #1e88e5;
+      --primary-dark: #1565c0;
+      --secondary: #ff9800;
+      --success: #4caf50;
+      --danger: #f44336;
+      --light: #f5f5f5;
+      --dark: #333;
+      --gray: #e0e0e0;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: var(--dark);
+      background-color: #fafafa;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px 0;
+    }
+    h1 {
+      color: var(--primary);
+      margin-bottom: 10px;
+      font-size: 2.5rem;
+    }
+    .tagline {
+      color: #666;
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+    .card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      padding: 25px;
+      margin-bottom: 20px;
+      transition: transform 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card h2 {
+      color: var(--primary);
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--gray);
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #555;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--gray);
+      border-radius: 6px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.2);
+    }
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: background 0.3s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    button:hover {
+      background: var(--primary-dark);
+    }
+    .btn-success {
+      background: var(--success);
+    }
+    .btn-success:hover {
+      background: #388e3c;
+    }
+    .btn-warning {
+      background: var(--secondary);
+    }
+    .btn-warning:hover {
+      background: #e65100;
+    }
+    .word-list {
+      list-style: none;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .word-item {
+      padding: 15px;
+      border-bottom: 1px solid var(--gray);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .word-item:hover {
+      background-color: #f9f9f9;
+    }
+    .word-main {
+      font-weight: 600;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+    .word-translation {
+      color: #555;
+      margin-top: 4px;
+    }
+    .quiz-container {
+      text-align: center;
+    }
+    #quiz-word {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin: 20px 0;
+      min-height: 60px;
+    }
+    #quiz-status {
+      font-size: 1.2rem;
+      min-height: 28px;
+      margin: 15px 0;
+    }
+    .correct {
+      color: var(--success);
+    }
+    .incorrect {
+      color: var(--danger);
+    }
+    .progress-container {
+      margin-top: 20px;
+    }
+    .progress-bar {
+      height: 10px;
+      background-color: var(--gray);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .progress {
+      height: 100%;
+      background-color: var(--success);
+      width: 0%;
+      transition: width 0.5s;
+    }
+    .accent-popup {
+      position: fixed;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      padding: 8px;
+      display: none;
+      z-index: 10000;
+      min-width: 200px;
+      flex-wrap: wrap;
+      gap: 4px;
+      max-width: 90vw;
+      top: calc(100% - 40px);
+    }
+    .accent-option {
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      user-select: none;
+      min-width: 30px;
+      text-align: center;
+      border: 1px solid transparent;
+    }
+    .accent-option:hover, .accent-option.active {
+      background-color: var(--primary);
+      color: white;
+      border-color: rgba(255,255,255,0.3);
+    }
+    .instructions {
+      background-color: #e3f2fd;
+      border-left: 4px solid var(--primary);
+      padding: 15px;
+      border-radius: 0 4px 4px 0;
+      margin: 20px 0;
+      font-size: 0.95rem;
+    }
+    .instructions h3 {
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    .status-connected {
+      background-color: var(--success);
+    }
+    .status-disconnected {
+      background-color: var(--danger);
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 20px;
+      color: #777;
+      border-top: 1px solid var(--gray);
+      font-size: 0.9rem;
+    }
+    .key-hint {
+      display: inline-block;
+      background: var(--gray);
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin: 0 2px;
+      font-family: monospace;
+      font-size: 0.9em;
+    }
+    /* New: Sentence Quiz */
+    .sentence-quiz-section {
+      margin-top: 20px;
+      display: none;
+    }
+    .sentence-quiz-form {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+    }
+    .revealed {
+      background: #e3f2fd;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+      color: #1565c0;
+    }
+    .input-group {
+      margin-bottom: 10px;
+    }
+    .feedback {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 0.95rem;
+    }
+    .feedback.correct {
+      background: #e8f5e8;
+      color: #2e7d32;
+    }
+    .feedback.incorrect {
+      background: #ffebee;
+      color: #c62828;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Spanish Vocabulary Builder</h1>
+    <p class="tagline">Build your Spanish vocabulary with smart accent suggestions, quizzes, and AI-powered feedback.</p>
+  </header>
+  <div class="container">
+    <div class="left-column">
+      <div class="card">
+        <h2>Add New Vocabulary</h2>
+        <div class="instructions">
+          <h3>Accent Suggestion Guide</h3>
+          <p>When typing Spanish words, press a vowel (<span class="key-hint">a</span>, <span class="key-hint">e</span>, <span class="key-hint">i</span>, <span class="key-hint">o</span>, <span class="key-hint">u</span>) or <span class="key-hint">n</span> and a popup will appear with accent options. Use <span class="key-hint">←</span> <span class="key-hint">→</span> to navigate and <span class="key-hint">Enter</span> to select.</p>
+        </div>
+        <div class="form-group" style="position: relative;">
+          <label for="new-word">Spanish Word</label>
+          <div class="input-container" style="position: relative;">
+            <input type="text" id="new-word" placeholder="Type a Spanish word (e.g. café, mañana)">
+            <div id="accent-popup" class="accent-popup"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="translation">English Translation</label>
+          <input type="text" id="translation" placeholder="Enter the English meaning">
+        </div>
+        <button id="add-word">
+          <span>Add to Vocabulary</span>
+        </button>
+      </div>
+
+      <div class="card">
+        <h2>Your Vocabulary</h2>
+        <p id="word-count">Total words: 0</p>
+        <ul id="word-list" class="word-list">
+          <!-- Words will be populated here -->
+        </ul>
+      </div>
+    </div>
+
+    <div class="right-column">
+      <div class="card">
+        <h2>Word Quiz</h2>
+        <div class="quiz-container">
+          <p>Translate the Spanish word to English</p>
+          <div id="quiz-word">Loading...</div>
+          <div class="form-group">
+            <label for="quiz-answer">Your translation</label>
+            <input type="text" id="quiz-answer" placeholder="Enter the English translation">
+          </div>
+          <div id="quiz-status"></div>
+          <button id="check-answer" class="btn-success">Check Answer</button>
+          <div class="progress-container">
+            <div>Progress: <span id="correct-count">0</span>/<span id="total-questions">0</span></div>
+            <div class="progress-bar">
+              <div class="progress" id="quiz-progress"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Sentence Quiz</h2>
+        <p>Practice full sentences using only your vocabulary.</p>
+        <button id="start-sentence-quiz" class="btn-warning">📝 Start Sentence Quiz</button>
+        <div class="sentence-quiz-section" id="sentence-quiz-section">
+          <div id="sentence-quiz-container"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Spanish Vocabulary Builder • Practice both written and spoken Spanish with AI feedback • Your data is secure</p>
+  </footer>
+
+  <script>
+    // ====== CONFIGURATION ======
+    // Replace with your actual Netlify site URL
+    const BACKEND_URL = 'https://spanish-server-u4y5.onrender.com';
+
+    // ====== DOM & STATE ======
+    let vocabulary = [];
+    let sentenceQuizData = [];
+    let correctAnswers = 0, totalAnswered = 0;
+    let recognition;
+
+    const $ = id => document.getElementById(id);
+
+    // ====== INIT ======
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadVocabulary();
+      startQuiz();
+      initSpeechRecognition();
+      setupEventListeners();
+    });
+
+    async function loadVocabulary() {
+      try {
+        const res = await fetch(`${BACKEND_URL}/vocab`);
+        const data = await res.json();
+        if (data.success) {
+          vocabulary = data.data;
+          renderVocabulary();
+          updateWordCount();
+        } else {
+          alert('Failed to load vocabulary');
+        }
+      } catch (err) {
+        console.error('Load error:', err);
+        alert('Network error');
+      }
+    }
+
+    function renderVocabulary() {
+      $('word-list').innerHTML = '';
+      if (vocabulary.length === 0) {
+        $('word-list').innerHTML = '<li class="word-item"><p style="text-align:center;color:#777;padding:20px;">Your vocabulary is empty.</p></li>';
+        return;
+      }
+      vocabulary.forEach(word => {
+        const li = document.createElement('li');
+        li.className = 'word-item';
+        li.innerHTML = `<div><div class="word-main">${word.word}</div><div class="word-translation">${word.translation}</div></div>`;
+        $('word-list').appendChild(li);
+      });
+    }
+
+    function updateWordCount() {
+      $('word-count').textContent = `Total words: ${vocabulary.length}`;
+    }
+
+    async function addWord() {
+      const word = $('new-word').value.trim();
+      const translation = $('translation').value.trim();
+      if (!word || !translation) return alert('Fill both fields!');
+      try {
+        const res = await fetch(`${BACKEND_URL}/vocab`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ word, translation })
+        });
+        const data = await res.json();
+        if (data.success) {
+          $('new-word').value = '';
+          $('translation').value = '';
+          await loadVocabulary();
+          startQuiz();
+          $('quiz-status').textContent = 'Added successfully!';
+          $('quiz-status').className = 'correct';
+          setTimeout(() => $('quiz-status').textContent = '', 2000);
+        } else {
+          alert('Add failed');
+        }
+      } catch (err) {
+        alert('Network error');
+      }
+    }
+
+    // ====== WORD QUIZ ======
+    function startQuiz() {
+      if (vocabulary.length === 0) {
+        $('quiz-word').textContent = 'Add words first!';
+        return;
+      }
+      const random = vocabulary[Math.floor(Math.random() * vocabulary.length)];
+      $('quiz-word').textContent = random.word;
+      $('quiz-answer').value = '';
+      $('quiz-status').textContent = '';
+      $('quiz-answer').focus();
+    }
+
+    function checkAnswer() {
+      const user = $('quiz-answer').value.trim().toLowerCase();
+      const correct = $('quiz-word').textContent;
+      const entry = vocabulary.find(v => v.word === correct);
+      const expected = entry.translation.toLowerCase();
+      totalAnswered++;
+      if (user === expected) {
+        correctAnswers++;
+        $('quiz-status').textContent = 'Correct!';
+        $('quiz-status').className = 'correct';
+      } else {
+        $('quiz-status').textContent = `Incorrect. Correct: "${entry.translation}"`;
+        $('quiz-status').className = 'incorrect';
+      }
+      $('correct-count').textContent = correctAnswers;
+      $('total-questions').textContent = totalAnswered;
+      $('quiz-progress').style.width = `${(correctAnswers / totalAnswered) * 100}%`;
+      setTimeout(startQuiz, 2000);
+    }
+
+    // ====== SENTENCE QUIZ ======
+    async function startSentenceQuiz() {
+      if (vocabulary.length < 3) return alert('Add at least 3 words!');
+      const container = $('sentence-quiz-container');
+      container.innerHTML = '<p>Generating sentences...</p>';
+
+      const prompt = `
+Generate 5 simple Spanish sentences using only these words:
+${vocabulary.map(v => v.word).join(', ')}
+
+For each sentence, provide:
+1. Spanish sentence
+2. Literal English translation
+3. Natural English translation
+
+Return as JSON:
+[{
+  "spanish": "...",
+  "literal": "...",
+  "natural": "..."
+}]`;
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/ai/generate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt })
+        });
+        const data = await res.json();
+        sentenceQuizData = JSON.parse(data.text);
+        renderSentenceQuiz();
+      } catch (err) {
+        container.innerHTML = `<p>Error: ${err.message}</p>`;
+      }
+    }
+
+    function renderSentenceQuiz() {
+      $('sentence-quiz-section').style.display = 'block';
+      const container = $('sentence-quiz-container');
+      container.innerHTML = '';
+      sentenceQuizData.forEach(s => {
+        const form = document.createElement('div');
+        form.className = 'sentence-quiz-form';
+        form.innerHTML = `
+          <div class="revealed">"${s.spanish}"</div>
+          <div class="input-group">
+            <label>Literal Translation</label>
+            <input type="text" class="input-literal" placeholder="Word-for-word">
+          </div>
+          <div class="input-group">
+            <label>Natural Translation</label>
+            <input type="text" class="input-natural" placeholder="Fluent English">
+          </div>
+          <button class="btn-success check-sentence">✅ Check</button>
+          <div class="feedback"></div>
+        `;
+        container.appendChild(form);
+
+        const inputs = form.querySelectorAll('input');
+        const checkBtn = form.querySelector('.check-sentence');
+        const feedback = form.querySelector('.feedback');
+
+        checkBtn.onclick = () => {
+          const literal = inputs[0].value.trim().toLowerCase();
+          const natural = inputs[1].value.trim().toLowerCase();
+          const isLit = literal === s.literal.toLowerCase();
+          const isNat = natural === s.natural.toLowerCase();
+          if (isLit && isNat) {
+            feedback.innerHTML = '✅ Perfect! Both translations correct.';
+            feedback.className = 'feedback correct';
+          } else {
+            feedback.innerHTML = `❌ Try again. Literal: "${s.literal}", Natural: "${s.natural}"`;
+            feedback.className = 'feedback incorrect';
+          }
+        };
+      });
+    }
+
+    // ====== SPEECH RECOGNITION ======
+    function initSpeechRecognition() {
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.lang = 'es-ES';
+        recognition.interimResults = false;
+      }
+    }
+
+    // ====== ACCENT SUGGESTIONS ======
+    const accentMap = {
+      'a': ['á', 'à', 'â', 'ã', 'ä'],
+      'e': ['é', 'è', 'ê', 'ë'],
+      'i': ['í', 'ì', 'î', 'ï'],
+      'o': ['ó', 'ò', 'ô', 'õ', 'ö'],
+      'u': ['ú', 'ù', 'û', 'ü'],
+      'n': ['ñ']
+    };
+
+    let activeAccentIndex = -1;
+    let currentBaseChar = '';
+
+    function handleAccentSuggestion(e) {
+      if (e.key.length !== 1) return;
+      const baseChar = e.key.toLowerCase();
+      if (baseChar in accentMap) {
+        setTimeout(() => {
+          const input = e.target;
+          const cursorPos = input.selectionStart;
+          const charBefore = input.value.charAt(cursorPos - 1).toLowerCase();
+          if (charBefore === baseChar) {
+            currentBaseChar = baseChar;
+            showAccentPopup(input, accentMap[baseChar], cursorPos);
+          }
+        }, 0);
+      }
+    }
+
+    function showAccentPopup(input, options, cursorPos) {
+      const rect = input.getBoundingClientRect();
+      const left = rect.left + (cursorPos * 8) - 16;
+      const top = rect.top + window.pageYOffset - 45;
+      $('accent-popup').style.left = `${left}px`;
+      $('accent-popup').style.top = `${top}px`;
+      $('accent-popup').style.display = 'flex';
+      $('accent-popup').innerHTML = '';
+      options.forEach((opt, i) => {
+        const el = document.createElement('div');
+        el.className = 'accent-option';
+        el.textContent = opt;
+        el.dataset.index = i;
+        $('accent-popup').appendChild(el);
+      });
+      activeAccentIndex = 0;
+      updateActiveAccentOption();
+    }
+
+    function updateActiveAccentOption() {
+      document.querySelectorAll('.accent-option').forEach((el, i) => {
+        el.classList.toggle('active', i === activeAccentIndex);
+      });
+    }
+
+    function handlePopupNavigation(e) {
+      if ($('accent-popup').style.display !== 'flex') return;
+      const opts = document.querySelectorAll('.accent-option');
+      switch (e.key) {
+        case 'ArrowRight': case 'ArrowDown':
+          e.preventDefault();
+          activeAccentIndex = (activeAccentIndex + 1) % opts.length;
+          updateActiveAccentOption();
+          break;
+        case 'ArrowLeft': case 'ArrowUp':
+          e.preventDefault();
+          activeAccentIndex = (activeAccentIndex - 1 + opts.length) % opts.length;
+          updateActiveAccentOption();
+          break;
+        case 'Enter':
+          e.preventDefault();
+          if (activeAccentIndex >= 0) {
+            replaceLastCharacter(opts[activeAccentIndex].textContent);
+            hideAccentPopup();
+          }
+          break;
+        case 'Escape':
+          e.preventDefault();
+          hideAccentPopup();
+          break;
+      }
+    }
+
+    function hideAccentPopup() {
+      $('accent-popup').style.display = 'none';
+      activeAccentIndex = -1;
+    }
+
+    function handleOutsideClick(e) {
+      const container = document.querySelector('.input-container');
+      if (container && !container.contains(e.target)) hideAccentPopup();
+    }
+
+    function replaceLastCharacter(char) {
+      const input = $('new-word');
+      const pos = input.selectionStart;
+      const val = input.value;
+      input.value = val.substring(0, pos - 1) + char + val.substring(pos);
+      input.setSelectionRange(pos, pos);
+    }
+
+    // ====== EVENT LISTENERS ======
+    function setupEventListeners() {
+      $('add-word').addEventListener('click', addWord);
+      $('check-answer').addEventListener('click', checkAnswer);
+      $('start-sentence-quiz').addEventListener('click', startSentenceQuiz);
+      $('new-word').addEventListener('keydown', handleAccentSuggestion);
+      document.addEventListener('keydown', handlePopupNavigation);
+      document.addEventListener('click', handleOutsideClick);
+      document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('accent-option')) {
+          replaceLastCharacter(e.target.textContent);
+          hideAccentPopup();
+        }
+      });
+    }
+  </script>
+</body>
+</html>

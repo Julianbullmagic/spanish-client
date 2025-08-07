@@ -464,7 +464,9 @@ Do not include explanations, numbers, or extra text.`;
     // Parse the AI's JSON response
     let words;
     try {
+      
       words = JSON.parse(data.text);
+      console.log(words)
     } catch (e) {
       console.error('Failed to parse AI JSON:', data.text);
       throw new Error('Invalid response format');

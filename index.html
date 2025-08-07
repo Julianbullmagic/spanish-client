@@ -323,24 +323,19 @@
           <span>Add to Vocabulary</span>
         </button>
       </div>
-      <div class="card">
+<div class="card">
   <h2>Add Words by Topic</h2>
   <div class="instructions">
     <h3>Generate Vocabulary Automatically</h3>
-    <p>Enter a topic or description (e.g., "words about cooking", "common phrases for travel"), and choose how many words to generate.</p>
+    <p>Enter a topic or description (e.g., "bicycle riding", "cooking"), and choose how many words to generate.</p>
   </div>
   <div class="form-group">
     <label for="topic-input">Topic or Description</label>
-    <input type="text" id="topic-input" placeholder="e.g. bicycle riding, restaurants, family">
+    <input type="text" id="topic-input" placeholder="e.g. travel, food, family">
   </div>
   <div class="form-group">
     <label for="word-count">Number of Words</label>
-    <select id="word-count">
-      <option value="3">3</option>
-      <option value="5" selected>5</option>
-      <option value="10">10</option>
-      <option value="15">15</option>
-    </select>
+    <input type="number" id="word-count" value="5" min="1" max="20" placeholder="e.g. 5">
   </div>
   <button id="generate-words" class="btn-warning">
     🚀 Generate Words
@@ -398,7 +393,7 @@
     // Replace with your actual Netlify site URL
     const BACKEND_URL = 'https://spanish-server-u4y5.onrender.com';
 
-    // ====== DOM & STATE ======
+    // ====== DOM & STATE ====== generateWordsByTopic
     let vocabulary = [];
     let sentenceQuizData = [];
     let correctAnswers = 0, totalAnswered = 0;
@@ -432,8 +427,8 @@
     }
 
     async function generateWordsByTopic() {
-  const topicInput = $('topic-input');
-  const countInput = $('word-count');
+const topicInput = $('topic-input');
+const countInput = $('word-count'); // This now refers to the number input
   const statusEl = $('generation-status');
 
   const topic = topicInput.value.trim();

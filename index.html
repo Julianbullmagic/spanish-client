@@ -465,7 +465,8 @@ Do not include explanations, numbers, or extra text.`;
     let words;
     try {
       console.log(data)
-      words = JSON.parse(data.text.words);
+      words = JSON.parse(data.text);
+      words=words.words
       console.log(words)
     } catch (e) {
       console.error('Failed to parse AI JSON:', data.text);
